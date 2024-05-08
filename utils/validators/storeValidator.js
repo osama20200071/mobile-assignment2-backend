@@ -29,3 +29,8 @@ exports.addFavStoreValidator = [
   check("storeId").isMongoId().withMessage("invalid Store id"),
   validatorMiddleware,
 ];
+
+exports.removeFavStoreValidator = [
+  check("storeId").isMongoId().withMessage("invalid Store id"),
+  validatorMiddleware,
+];

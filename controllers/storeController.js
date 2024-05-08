@@ -52,15 +52,6 @@ exports.createStore = asyncHandler(async (req, res, next) => {
 // =================================================================
 // ====================== store other ops ===========================
 // =================================================================
-exports.getFavStores = asyncHandler(async (req, res, next) => {
-  // Get the favorite store IDs for a specific user
-  const favStoreIds = req.user.favStores;
-  // Find stores where the storeId is in the favStoreIds array
-  const stores = await storeModel
-    .find({ _id: { $in: favStoreIds } })
-    .select("name location");
-  res.status(200).json({ favStores: stores });
-});
 
 exports.addFavStore = asyncHandler(async (req, res, next) => {
   // Get the storeId from the request body
@@ -85,7 +76,7 @@ exports.addFavStore = asyncHandler(async (req, res, next) => {
     user._id,
     {
       // Add the storeId to the favStores array
-      favStores: [...user.favStores, storeId], // $addToSet ensures uniqueness
+      $addToSet: { favStores: storeId },
     },
     { new: true }
   );
@@ -93,19 +84,51 @@ exports.addFavStore = asyncHandler(async (req, res, next) => {
   res.status(200).json({ user: updateUser });
 });
 
-exports.getClosestStore = asyncHandler(async (req, res, next) => {
+exports.removeFavStore = asyncHandler(async (req, res, next) => {
+  // Get the storeId from the request body
+  const { storeId } = req.body;
+  const store = await storeModel.findById(storeId);
+
+  if (!store) {
+    return next(new ApiError("There is no store with this id", 404));
+  }
+
+  const user = req.user;
+
+  if (!user.favStores.includes(storeId)) {
+    // If the storeId doesn't exist in the favStores array
+    return res
+      .status(400)
+      .json({ message: "Store is not in your favorites already." });
+  }
+
+  // If the storeId exists, update the user entity to remove it from favStores
+  const updateUser = await userModel.findByIdAndUpdate(
+    user._id,
+    {
+      $pull: { favStores: storeId }, // Remove storeId from favStores array
+    },
+    { new: true }
+  );
+
+  res.status(200).json({ user: updateUser });
+});
+
+exports.getFavStores = asyncHandler(async (req, res, next) => {
   const { userLocation } = req.body;
   console.log(userLocation);
-  const allStores = await storeModel.find();
+  const favStoreIds = req.user.favStores;
+  const stores = await storeModel
+    .find({ _id: { $in: favStoreIds } })
+    .select("name location");
 
   const sortedStores = sortStoresByDistance(
-    allStores,
+    stores,
     userLocation.lat,
     userLocation.lon
   );
 
-  // console.log(sortedStores);
-  res.status(200).json({ nearestStore: sortedStores[0] });
+  res.status(200).json({ favStores: sortedStores });
 });
 
 // else {

@@ -8,12 +8,14 @@ const {
   getSpecificStore,
   getFavStores,
   deleteSpecificStore,
+  removeFavStore,
 } = require("../controllers/storeController");
 const {
   getStoreValidator,
   deleteStoreValidator,
   createStoreValidator,
   addFavStoreValidator,
+  removeFavStoreValidator,
 } = require("../utils/validators/storeValidator");
 const router = Router();
 
@@ -21,6 +23,8 @@ const router = Router();
 router.use(protect);
 // here is the order is important as it treats with /fav-stores as it's storeId
 router.get("/fav-stores", getFavStores);
+router.post("/fav-stores", addFavStoreValidator, addFavStore);
+router.delete("/fav-stores", removeFavStoreValidator, removeFavStore);
 
 // crud operations
 router.post("/", createStoreValidator, createStore);
@@ -29,9 +33,7 @@ router.delete("/:storeId", deleteStoreValidator, deleteSpecificStore);
 router.get("/", getAllStores);
 // to do => delete
 
-router.post("/fav-stores", addFavStoreValidator, addFavStore);
-
 // to do
-// router.post("/closest-store", getClosestStore);
+// router.post("/closest-stores", getClosestStore);
 
 module.exports = router;
