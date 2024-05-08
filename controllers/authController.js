@@ -2,8 +2,9 @@ const userModel = require("../models/userModel");
 const ApiError = require("../utils/ApiError");
 const createToken = require("../utils/createToken");
 const jwt = require("jsonwebtoken");
+const asyncHandler = require("express-async-handler");
 
-exports.login = async (req, res, next) => {
+exports.login = asyncHandler(async (req, res, next) => {
   // 1- validate the password and email
   const { password, email } = req.body;
 
@@ -25,9 +26,9 @@ exports.login = async (req, res, next) => {
   // create token
   const token = createToken({ userId: user._id });
   res.status(200).json({ data: user, token });
-};
+});
 
-exports.signup = async (req, res, next) => {
+exports.signup = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
   // create the user
   // the password is hashed using the mongoose middleware
@@ -36,13 +37,13 @@ exports.signup = async (req, res, next) => {
   // create the jwt
   const token = createToken({ userId: user._id });
   res.status(201).json({ data: user, token });
-};
+});
 
 // =================================================================
 // for the authentication process
 // =================================================================
 // @desc  to make sure that the user is authenticated (is loggedIn )
-exports.protect = async (req, res, next) => {
+exports.protect = asyncHandler(async (req, res, next) => {
   // check if there is a token
   let token;
   if (
@@ -75,19 +76,18 @@ exports.protect = async (req, res, next) => {
 
   // for later usages (for checking the role of The user)
   req.user = user;
-  console.log("req.user", req.body);
   return next();
-};
+});
 
-exports.getAllUsers = async (req, res, next) => {
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
   const users = await userModel.find();
   res.status(200).json({
     users: users,
   });
-};
+});
 
-exports.profile = async (req, res, next) => {
+exports.profile = asyncHandler(async (req, res, next) => {
   // check if the user is already logged in
   const user = req.user;
   res.status(200).json({ data: user });
-};
+});

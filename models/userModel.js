@@ -17,11 +17,7 @@ const userSchema = new mongoose.Schema(
       required: [true, "password is required"],
       minLength: [6, "password must be at least 6 characters"],
     },
-    location: {
-      lat: String,
-      lon: String,
-    },
-    favStores: [String],
+    favStores: [{ type: mongoose.Schema.ObjectId, ref: "Store" }],
   },
   { timestamps: true }
 );
