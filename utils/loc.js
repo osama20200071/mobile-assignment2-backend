@@ -32,7 +32,6 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 exports.sortStoresByDistance = (stores, lat, lon) => {
-  // const sortedStores = [...stores];
   const sortedStores = stores
     .map((store) => ({
       _id: store._id,

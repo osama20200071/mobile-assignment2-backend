@@ -2,7 +2,6 @@ const { Router } = require("express");
 const { protect } = require("../controllers/authController");
 const {
   getAllStores,
-  getClosestStore,
   addFavStore,
   createStore,
   getSpecificStore,
@@ -31,6 +30,7 @@ router.post("/", createStoreValidator, createStore);
 router.get("/:storeId", getStoreValidator, getSpecificStore);
 router.delete("/:storeId", deleteStoreValidator, deleteSpecificStore);
 router.get("/", getAllStores);
+
 // to do => delete
 
 // to do

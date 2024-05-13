@@ -7,6 +7,7 @@ const asyncHandler = require("express-async-handler");
 exports.login = asyncHandler(async (req, res, next) => {
   // 1- validate the password and email
   const { password, email } = req.body;
+  console.log(email, password);
 
   // validate the email
   const user = await userModel.findOne({ email: email });

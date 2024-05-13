@@ -115,18 +115,14 @@ exports.removeFavStore = asyncHandler(async (req, res, next) => {
 });
 
 exports.getFavStores = asyncHandler(async (req, res, next) => {
-  const { userLocation } = req.body;
-  console.log(userLocation);
+  const { lat, lon } = req.query;
+  console.log(lat, lon);
   const favStoreIds = req.user.favStores;
   const stores = await storeModel
     .find({ _id: { $in: favStoreIds } })
     .select("name location");
 
-  const sortedStores = sortStoresByDistance(
-    stores,
-    userLocation.lat,
-    userLocation.lon
-  );
+  const sortedStores = sortStoresByDistance(stores, +lat, +lon);
 
   res.status(200).json({ favStores: sortedStores });
 });
